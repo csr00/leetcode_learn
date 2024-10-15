@@ -1,0 +1,45 @@
+leetcode88、合并两个有序数组
+
+思路：双指针，从后往前遍历，比较两个数组的元素大小，将大的元素放入新数组中，
+直到其中一个数组遍历完，将另一个数组剩余的元素放入新数组中。
+C++代码如下：
+void merge(vector<int>& nums1, int m, vector<int>& nums2, int n){
+        int size1=m+n-1;
+        int i=m-1,j=n-1;
+        while(i>=0&&j>=0){
+            if(nums1[i]>=nums2[j]){
+                nums1[size1--]=nums1[i--];
+            }else{
+                nums1[size1--]=nums2[j--];
+            }
+        }
+        while(j>=0){
+            nums1[size1--]=nums2[j--];
+        }
+    }
+
+但是因为sort函数有较好的优化，本题最佳的思路是将nums2中的元素插入到nums1后，
+然后对nums1进行排序。
+
+void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
+        for(int i = 0; i < n;i++){
+            nums1[m+i] = nums2[i];
+        }
+        sort(nums1.begin(),nums1.end());
+    }
+
+
+类似的题目还有leetcode283移动零，也是把特定元素移动到数组一端
+void moveZeroes(vector<int>& nums){
+        int i=0,j=0;
+        while(i<nums.size()){
+            if(nums[i]!=0){
+                nums[j]=nums[i];
+                j++;
+            }
+            i++;
+        }
+        while(j<nums.size()){
+            nums[j++]=0;
+        }
+    }
