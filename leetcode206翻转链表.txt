@@ -1,0 +1,49 @@
+leetcode206翻转链表
+给你单链表的头节点 head ，请你反转链表，并返回反转后的链表
+left mid right 三个指针
+
+ListNode* reverseList(ListNode* head) {
+        ListNode* left=nullptr;
+        ListNode* mid=head;
+        ListNode* right=nullptr;
+        while(mid){
+            right=mid->next;
+            mid->next=left;
+            left=mid;
+            mid=right;
+        }
+        return left;
+    }
+
+同理，leetcode25k个一组翻转链表
+ListNode* reverseKGroup(ListNode* head, int k){
+        ListNode* ret=new ListNode();
+        ret->next=head;
+        ListNode* left=ret;
+        ListNode* right=ret;
+        while(true){
+            for(int i=0;i<k&&right;++i){
+                right=right->next;
+            }
+            if(!right) break;
+            ListNode* leftNext=left->next,*rightNext=right->next;
+            right->next=nullptr;
+            left->next=reverseList(left->next);
+            leftNext->next=rightNext;
+            left=right=leftNext;
+        }
+        return ret->next;
+
+    }
+    ListNode* reverseList(ListNode* head){
+        ListNode* left=nullptr;
+        ListNode* mid=head;
+        ListNode* right=mid->next;
+        while(mid){
+            right=mid->next;
+            mid->next=left;
+            left=mid;
+            mid=right;
+        }
+        return left;
+    }
