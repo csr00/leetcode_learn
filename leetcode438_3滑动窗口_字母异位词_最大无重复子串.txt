@@ -1,0 +1,121 @@
+438题是一个滑动窗口问题
+同时需要使用hashmap来记录字母出现的次数
+unordered_map<char,int> map;或者array<int> map(26,0);
+利用STL重载的==运算符，可以直接比较两个map是否相等
+需要注意使用erase函数来删除map中的元素，而不是直接赋值为0
+
+第3题也是一个滑动窗口问题，都需要维持left和right两个“指针”
+也都可以利用数组记录字符的编码来充当hashmap
+
+leetcode438. 找到字符串中所有字母异位词
+
+给定两个字符串 s 和 p,找到 s 中所有 p 的 异位词
+的子串,返回这些子串的起始索引。不考虑答案输出的顺序。
+
+异位词 指由相同字母重排列形成的字符串（包括相同的字符串）。
+
+示例 1:
+
+输入: s = "cbaebabacd", p = "abc"
+输出: [0,6]
+解释:
+起始索引等于 0 的子串是 "cba", 它是 "abc" 的异位词。
+起始索引等于 6 的子串是 "bac", 它是 "abc" 的异位词。
+
+vector<int> findAnagrams(string s, string p) {
+        vector<int> ret;
+        int sLength=s.length(),pLength=p.length();
+        if(pLength>sLength) return ret;
+        unordered_map<char,int> pMap;
+        unordered_map<char,int> sMap;
+        for(char c:p){
+            pMap[c]++;
+        }
+        for(int i=0;i<pLength;++i){
+            sMap[s[i]]++;
+        }
+        if(pMap==sMap) ret.push_back(0);
+        for(int i=pLength;i<sLength;++i){
+            sMap[s[i]]++;
+            sMap[s[i-pLength]]--;
+            if(sMap[s[i-pLength]]==0) sMap.erase(s[i-pLength]);
+            if(pMap==sMap) ret.push_back(i-pLength+1);
+        }
+        return ret;
+    }
+
+因为本题只涉及26个小写字母，所以可以用数组优化
+vector<int> findAnagrams(string s, string p) {
+        if(p.size()>s.size()) return {};
+        int sLen=s.size(),pLen=p.size();
+        vector<int> sCount(26);
+        vector<int> pCount(26);
+        vector<int> ans;
+        for(int i=0;i<pLen;i++){
+            sCount[s[i]-'a']++;
+            pCount[p[i]-'a']++;
+        }
+        if(pCount==sCount) ans.push_back(0);
+        for(int i=0;i<sLen-pLen;i++){
+            sCount[s[i]-'a']--;
+            sCount[s[i+pLen]-'a']++;
+            if(sCount==pCount) ans.push_back(i+1);
+        }
+        return ans;
+    }
+
+
+leetcode3、无重复字符的最长子串
+给定一个字符串 s ，请你找出其中不含有重复字符的 最长 
+子串的长度。
+
+hashmap版本
+int lengthOfLongestSubstring(string s){
+         int ret=0;
+         int left=0;
+         unordered_map<char,int> countChar;
+         for(int right=0;right<s.length();right++){
+             countChar[s[right]]++;
+             while(countChar[s[right]]>1){
+                 countChar[s[left]]--;
+                 left++;
+             }
+             ret=max(ret,right-left+1);
+         }
+         return ret;
+     }
+由于只涉及256个ASCII字符，所以可以用数组优化
+int lengthOfLongestSubstring(string s){
+        int ret=0;
+        int left=0;
+        vector<int> map(256,0);
+        for(int right=0;right<s.length();++right){
+            map[s[right]]++;
+            while(map[s[right]]>1){
+                map[s[left]]--;
+                left++;
+            }
+            ret=max(ret,right-left+1);
+        }
+        return ret;
+    }
+更进一步可以用bool类型的数组优化
+int lengthOfLongestSubstring(string s) {
+        int n = s.length();
+        int cnt = 0;
+        int max = 0;
+        bool ca[256] = {false};
+        int j = 0;
+        for(int i = 0; i < n; i ++){
+            while(ca[s[i]]){
+                ca[s[j]] = false;
+                j ++;
+            }
+            ca[s[i]] = true;
+            cnt = i - j + 1;
+            if(cnt > max){
+                max = cnt;
+            }
+        }
+        return max;
+    }
