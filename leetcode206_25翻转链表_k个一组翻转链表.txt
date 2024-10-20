@@ -15,7 +15,9 @@ ListNode* reverseList(ListNode* head) {
         return left;
     }
 
-同理，leetcode25k个一组翻转链表
+同理，leetcode25，k个一组翻转链表，关键是怎么断开链表
+（while循环计数、for循环取商取余计数）
+断开后后就可以调用翻转链表
 ListNode* reverseKGroup(ListNode* head, int k){
         ListNode* ret=new ListNode();
         ret->next=head;

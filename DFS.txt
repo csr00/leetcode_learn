@@ -1,0 +1,37 @@
+DFS深度优先搜索可以用于解决树和图相关的问题，
+其基本思想是沿着一个路径一直向下搜索，直到达到叶子节点，
+然后回溯到上一个节点，继续搜索其他路径，体现的是自上而下（自顶向下）的搜索过程。
+
+DFS的递归实现比较简单，只需要在递归函数中处理当前节点，
+然后递归调用函数处理子节点即可。但是函数递归的空间复杂度较高（本质也是
+通过栈实现），也可以直接用栈来实现非递归的DFS。
+
+前序遍历：根左右
+中序遍历：左根右
+后序遍历：左右根
+leetcode543 二叉树的直径
+
+
+
+leetcode543 二叉树的直径
+给你一棵二叉树的根节点，返回该树的 直径 。
+二叉树的 直径 是指树中任意两个节点之间最长路径的 长度 。
+这条路径可能经过也可能不经过根节点 root 。
+两节点之间路径的 长度 由它们之间边数表示。
+注意边数才是长度，不是节点数
+class Solution {
+public:
+    int ret;
+    int diameterOfBinaryTree(TreeNode* root) {
+        ret=0;
+        dfs(root);
+        return ret;
+    }
+    int dfs(TreeNode* root){
+        if(root==nullptr) return 0;
+        int left=dfs(root->left);
+        int right=dfs(root->right);
+        ret=max(ret,left+right);
+        return max(left,right)+1;
+    }
+};
