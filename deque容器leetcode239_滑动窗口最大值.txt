@@ -1,0 +1,89 @@
+    deque双端队列是STL中的一个容器，位于头文件<deque>中，可以在两端进行插入和删除操作。
+deque容器支持随机访问，本质是维持多个连续的内存空间块，通过指针连接起来，因此访问速度
+很快，但插入和删除操作需要移动元素，速度较慢。
+    deque容器也是list和stack的常见底层容器，后者通过限制内含的deque容器的操作来实现。
+常见的操作：
+push_back()：在容器尾部添加元素
+push_front()：在容器头部添加元素
+pop_back()：删除容器尾部的元素
+pop_front()：删除容器头部的元素
+front()：返回容器头部的元素
+back()：返回容器尾部的元素
+empty()：判断容器是否为空
+size()：返回容器中元素的个数
+
+
+leetcode239_滑动窗口最大值
+
+给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧
+移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+返回 滑动窗口中的最大值 
+
+利用deque容器，维护一个双端队列，队列中存储的是数组下标，
+下标对应的值是递减的，队首元素是当前窗口的最大值。
+当窗口移动时，如果队首元素不在窗口内，则删除队首元素。
+如果新加入的元素大于队尾元素，则删除队尾元素，直到队尾元素大于等于新加入的元素。
+最后将新加入的元素加入队列。
+vector<int> maxSlidingWindow(vector<int>& nums, int k){
+        vector<int> ret;
+        deque<int> qmax;
+        for(int right=0;right<nums.size();++right){
+            while(!qmax.empty()&&nums[qmax.back()]<=nums[right]){
+                qmax.pop_back();
+            }
+            qmax.emplace_back(right);
+            if(qmax.front()==right-k){
+                qmax.pop_front();
+            }
+            if(right>=k-1){
+                ret.emplace_back(nums[qmax.front()]);
+            }
+        }
+        return ret;
+    }
+
+本题最容易想到的是遍历每个窗口，但是遍历算法会超时，超时算法如下。
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        vector<int> ret;
+        int premax=nums[0];
+        for(int i=1;i<k;++i){
+            premax=max(premax,nums[i]);
+        }
+        ret.push_back(premax);
+        for(int i=1;i<=nums.size()-k;++i){
+            if(nums[i-1]==premax){
+                premax=nums[i];
+                for(int j=1;j<k;++j){
+                    premax=max(premax,nums[i+j]);
+                }
+            }else{
+                premax=max(premax,nums[i+k-1]);
+            }
+            ret.push_back(premax);
+        }
+        return ret;
+    }
+同时本题leetcode最快解法是维护前缀最大值和后缀最大值，算法如下。
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        int n=nums.size();
+        vector<int> pre(n, -100000), suf(n, -100000);
+        for(int start=0; start<n; start+=k){
+            pre[start] = nums[start];
+
+            int end=min(start+k-1, n-1);
+            for(int i=start+1;i<=end;++i){
+                pre[i] = max(pre[i-1], nums[i]);        //前缀最大值
+            }
+
+            suf[end] = nums[end];
+            for(int i=end-1;i>=start;--i){
+                suf[i] = max(suf[i+1], nums[i]);        //后缀最大值
+            }
+        }
+
+        vector<int>ans;
+        for(int win_start=0; win_start+k-1<n; ++win_start){
+            ans.push_back(max(suf[win_start], pre[win_start+k-1]));
+        }
+        return ans;
+    }

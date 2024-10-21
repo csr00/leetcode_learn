@@ -1,0 +1,25 @@
+
+leetcode239_滑动窗口最大值  也可以通过前后缀最大值来求解
+vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        int n=nums.size();
+        vector<int> pre(n, -100000), suf(n, -100000);
+        for(int start=0; start<n; start+=k){
+            pre[start] = nums[start];
+
+            int end=min(start+k-1, n-1);
+            for(int i=start+1;i<=end;++i){
+                pre[i] = max(pre[i-1], nums[i]);        //前缀最大值
+            }
+
+            suf[end] = nums[end];
+            for(int i=end-1;i>=start;--i){
+                suf[i] = max(suf[i+1], nums[i]);        //后缀最大值
+            }
+        }
+
+        vector<int>ans;
+        for(int win_start=0; win_start+k-1<n; ++win_start){
+            ans.push_back(max(suf[win_start], pre[win_start+k-1]));
+        }
+        return ans;
+    }
